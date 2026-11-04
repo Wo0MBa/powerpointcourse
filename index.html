@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Power Point с Феей русского</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Forum&family=Golos+Text:wght@400;500;600&family=Marck+Script&display=swap">
+<style>
+/* Layout: розовая «тетрадь» — шапка курса, затем плеер слева и оглавление уроков справа; на телефоне в одну колонку */
+:root{
+  --bg:#fbeef0; --paper:#fffaf6; --blush:#f6d9dd; --rose:#e7a8b3; --rose-deep:#c9707f;
+  --ink:#5e3a2a; --ink-soft:#8a6656; --line:#efcdd2; --player:#2b1c17;
+  --display:"Forum","Cormorant Garamond",Georgia,serif;
+  --body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --hand:"Marck Script","Segoe Script",cursive;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:16px;line-height:1.55;
+  background-image:radial-gradient(circle at 12% 8%,#fde4e8 0,transparent 38%),radial-gradient(circle at 92% 30%,#fdeee4 0,transparent 35%);}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+header.hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;padding-block:8px 26px;border-bottom:1px dashed var(--rose)}
+.hero .eyebrow{font-family:var(--hand);font-size:26px;color:var(--rose-deep);line-height:1}
+.hero h1{font-family:var(--display);font-weight:400;font-size:clamp(38px,6vw,68px);line-height:1.02;margin:6px 0 0;text-wrap:balance;letter-spacing:.5px}
+.hero h1 em{font-style:normal;color:var(--rose-deep)}
+.hero p{margin:10px 0 0;max-width:56ch;color:var(--ink-soft)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.chip{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip b{font-weight:600}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;margin-top:20px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.stage{min-width:0}
+.player{position:relative;background:var(--player);border-radius:18px;overflow:hidden;box-shadow:0 18px 40px -22px rgba(120,50,60,.55);aspect-ratio:16/10;max-width:100%}
+.player video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--player)}
+.player video.off{visibility:hidden}
+.poster{position:absolute;inset:0;background:var(--paper) center/cover no-repeat;display:flex;align-items:center;justify-content:center;cursor:pointer;border:0;padding:0;width:100%}
+.poster .big{width:84px;height:84px;border-radius:50%;background:rgba(255,250,246,.92);display:grid;place-items:center;box-shadow:0 8px 26px rgba(94,58,42,.25);transition:transform .2s}
+.poster:hover .big,.poster:focus-visible .big{transform:scale(1.07)}
+.poster .big svg{width:34px;height:34px;margin-left:5px;fill:var(--rose-deep)}
+.spin{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:var(--rose);animation:sp 0.9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.bar{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 10px;background:linear-gradient(transparent,rgba(30,18,14,.78));display:flex;flex-direction:column;gap:6px;transition:opacity .3s}
+.player.idle .bar{opacity:0}
+.player.idle{cursor:none}
+.row{display:flex;align-items:center;gap:8px;color:#fff}
+.btn{background:transparent;border:0;color:#fff;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;cursor:pointer;flex:none}
+.btn:hover,.btn:focus-visible{background:rgba(255,255,255,.14);outline:none}
+.btn svg{width:22px;height:22px;fill:currentColor}
+.time{font-size:13px;font-variant-numeric:tabular-nums;opacity:.9;white-space:nowrap}
+.sp{flex:1}
+.speed{font:600 13px var(--body);width:auto;padding:0 10px}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:18px;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:5px;background:linear-gradient(to right,var(--rose) var(--p,0%),rgba(255,255,255,.3) var(--p,0%))}
+input[type=range]::-moz-range-track{height:5px;border-radius:5px;background:linear-gradient(to right,var(--rose) var(--p,0%),rgba(255,255,255,.3) var(--p,0%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:#fff;margin-top:-5px;border:0}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#fff;border:0}
+input[type=range]:focus-visible{outline:2px solid var(--rose);outline-offset:2px;border-radius:4px}
+#vol{width:80px}
+@media (max-width:520px){#vol{display:none}.bar{padding:20px 8px 6px}.btn{width:34px;height:34px}}
+.now{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline;justify-content:space-between}
+.now .n{font-family:var(--hand);font-size:24px;color:var(--rose-deep)}
+.now h2{font-family:var(--display);font-weight:400;font-size:clamp(28px,4vw,40px);margin:0;line-height:1.1;text-wrap:balance}
+.navs{display:flex;gap:8px}
+.pill{font:500 14px var(--body);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:9px 16px;cursor:pointer}
+.pill:hover,.pill:focus-visible{border-color:var(--rose-deep);outline:none}
+.pill[disabled]{opacity:.4;cursor:default}
+.pill.main{background:var(--rose-deep);border-color:var(--rose-deep);color:#fff}
+.note{margin-top:10px;color:var(--ink-soft);font-size:15px;max-width:64ch}
+aside{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+@media (max-width:900px){aside{position:static}}
+aside h3{margin:0 0 4px;font-family:var(--display);font-weight:400;font-size:26px}
+.prog{font-size:13px;color:var(--ink-soft);margin-bottom:14px}
+.prog .track{height:6px;border-radius:6px;background:var(--blush);margin-top:6px;overflow:hidden}
+.prog .track i{display:block;height:100%;background:var(--rose-deep);width:0;transition:width .4s}
+.list{display:flex;flex-direction:column;gap:10px;list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:104px minmax(0,1fr);gap:12px;align-items:center;padding:8px;border-radius:14px;border:1px solid transparent;cursor:pointer;background:transparent;text-align:left;width:100%;font:inherit;color:inherit}
+.item:hover,.item:focus-visible{background:var(--bg);outline:none}
+.item.on{background:var(--blush);border-color:var(--rose)}
+.item img{width:104px;aspect-ratio:16/9;object-fit:cover;border-radius:9px;display:block}
+.item .k{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-deep);font-weight:600}
+.item .t{font-family:var(--display);font-size:19px;line-height:1.15;margin:2px 0}
+.item .d{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.item .done{color:var(--rose-deep);font-weight:600}
+/* заставка */
+.intro{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:40px;align-items:center;padding-block:10px 34px}
+@media (max-width:900px){.intro{grid-template-columns:minmax(0,1fr) 280px;gap:24px}}
+@media (max-width:640px){.intro{grid-template-columns:minmax(0,1fr)}.reel{max-width:330px;width:100%;margin:0 auto}}
+.who{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.portrait{position:relative;flex:none;width:132px;height:132px;border-radius:50%;overflow:hidden;background:var(--blush) 30% center/cover no-repeat;border:4px solid var(--paper);box-shadow:0 12px 26px -14px rgba(150,60,80,.6)}
+.portrait img{position:absolute;left:50%;bottom:-6%;height:112%;width:auto;max-width:none;transform:translateX(-46%)}
+.bubble{background:var(--player);color:#fff;font-family:var(--hand);font-size:24px;line-height:1.15;padding:10px 16px;border-radius:16px 16px 16px 4px;max-width:220px}
+.intro .eyebrow{font-family:var(--hand);font-size:26px;color:var(--rose-deep);line-height:1}
+.intro h1{font-family:var(--display);font-weight:400;font-size:clamp(38px,5vw,62px);line-height:1.02;margin:6px 0 0;text-wrap:balance;letter-spacing:.5px}
+.intro h1 em{font-style:normal;color:var(--rose-deep)}
+.intro .lead{margin:14px 0 0;font-size:17px;max-width:46ch}
+.promises{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.promises li{display:flex;gap:10px;align-items:baseline;color:var(--ink-soft)}
+.promises li::before{content:"✦";color:var(--rose-deep);flex:none}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;align-items:center}
+.reel{position:relative;width:100%;border-radius:30px;overflow:hidden;aspect-ratio:9/16;background:var(--player);border:6px solid var(--paper);box-shadow:0 22px 40px -22px rgba(120,50,60,.7);max-width:100%}
+.reel video{width:100%;height:100%;object-fit:cover;display:block}
+.reel .snd{position:absolute;right:10px;bottom:10px;background:rgba(255,250,246,.9);color:var(--ink);border:0;border-radius:999px;padding:7px 12px;font:600 13px var(--body);cursor:pointer}
+.reel .cap{position:absolute;left:10px;top:10px;background:rgba(255,250,246,.9);border-radius:999px;padding:5px 11px;font-size:12px;font-weight:600;color:var(--rose-deep)}
+/* меню */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(251,238,240,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--bg)}
+.top .in{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;display:flex;align-items:center;gap:12px 20px;flex-wrap:wrap;justify-content:space-between}
+.brand{font-family:var(--display);font-size:22px;color:var(--ink);text-decoration:none;white-space:nowrap}
+.brand em{font-style:normal;color:var(--rose-deep)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{font:500 15px var(--body);color:var(--ink);text-decoration:none;padding:8px 16px;border-radius:999px;border:1px solid transparent}
+.tab:hover,.tab:focus-visible{border-color:var(--rose);outline:none}
+.tab[aria-current="page"]{background:var(--rose-deep);color:#fff}
+@media (max-width:560px){.brand{display:none}.top .in{justify-content:center}.tabs{flex-wrap:nowrap;gap:2px}.tab{padding:8px 10px;font-size:14px;white-space:nowrap}}
+.menu-h{font-family:var(--display);font-weight:400;font-size:clamp(28px,3.6vw,38px);margin:8px 0 4px}
+.menu-sub{color:var(--ink-soft);margin:0 0 18px}
+.menu{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:820px){.menu{grid-template-columns:minmax(0,1fr)}}
+.mcard{display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:20px;overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .2s,box-shadow .2s,border-color .2s}
+.mcard:hover,.mcard:focus-visible{transform:translateY(-3px);border-color:var(--rose-deep);box-shadow:0 18px 34px -24px rgba(150,60,80,.7);outline:none}
+.mcard .img{aspect-ratio:16/9;background:var(--blush) center/cover no-repeat}
+.mcard .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:4px}
+.mcard .k{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-deep);font-weight:600}
+.mcard .t{font-family:var(--display);font-size:28px;line-height:1.1}
+.mcard .d{color:var(--ink-soft);font-size:14px}
+.mcard .go{margin-top:10px;font-weight:600;color:var(--rose-deep)}
+@media (max-width:820px){.mcard{display:grid;grid-template-columns:120px minmax(0,1fr)}.mcard .img{aspect-ratio:auto;min-height:100%}.mcard .t{font-size:24px}.mcard .go{display:none}}
+.vhead{margin:6px 0 0}
+.vhead h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,4vw,44px);margin:0;line-height:1.1}
+/* материалы */
+.block{margin-top:22px}
+.block h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,4vw,44px);margin:0;line-height:1.1}
+.block .sub{color:var(--ink-soft);margin:6px 0 22px;max-width:62ch}
+.sheets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+@media (max-width:640px){.sheets{grid-template-columns:minmax(0,1fr)}}
+.sheet{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:12px;cursor:zoom-in;text-align:left;font:inherit;color:inherit}
+.sheet:hover,.sheet:focus-visible{border-color:var(--rose-deep);outline:none}
+.sheet .img{height:420px;border-radius:12px;background:var(--bg) top center/cover no-repeat}
+.sheet .t{font-family:var(--display);font-size:24px}
+.sheet .d{color:var(--ink-soft);font-size:14px;margin-top:-8px}
+.tpls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+@media (max-width:900px){.tpls{grid-template-columns:minmax(0,1fr)}}
+.tpl{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.tpl .img{aspect-ratio:16/9;background:var(--player) center/cover no-repeat;border:0;padding:0;cursor:zoom-in;width:100%;display:block;position:relative}
+.tpl .img span{position:absolute;left:10px;bottom:10px;background:rgba(255,250,246,.92);color:var(--ink);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600}
+.tpl .body{padding:16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.tpl .t{font-family:var(--display);font-size:23px;line-height:1.15}
+.tpl .d{color:var(--ink-soft);font-size:14px;flex:1}
+.tpl .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.tpl .tag{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--rose-deep)}
+.dlmsg{font-size:13px;color:var(--rose-deep);min-height:1.2em}
+/* просмотр */
+.lb{position:fixed;inset:0;z-index:50;background:rgba(43,28,23,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lb img{max-width:min(1100px,100%);max-height:calc(100% - 70px);object-fit:contain;border-radius:10px;background:var(--paper)}
+.lb .ctl{display:flex;gap:10px;align-items:center;color:#fff;font-variant-numeric:tabular-nums}
+.lb .pill{background:rgba(255,250,246,.95)}
+.lb.tall{justify-content:flex-start;overflow:auto}
+.lb.tall img{max-height:none;max-width:min(820px,100%)}
+footer{margin-top:40px;text-align:center;color:var(--ink-soft);font-size:14px}
+footer .sig{font-family:var(--hand);font-size:28px;color:var(--rose-deep);display:block}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation-duration:2s!important}}
+</style>
+</head>
+<body>
+
+
+<nav class="top" aria-label="Меню курса"><div class="in">
+  <a class="brand" href="#home">Power Point <em>с Феей русского</em></a>
+  <div class="tabs"><a class="tab" href="#home" data-v="home">Главная</a><a class="tab" href="#lessons" data-v="lessons">Уроки</a><a class="tab" href="#sheets" data-v="sheets">Шпаргалки</a><a class="tab" href="#templates" data-v="templates">Шаблоны</a></div>
+</div></nav>
+<div class="wrap">
+ <div class="view" id="v-home">
+  <header class="intro">
+    <div>
+      <div class="who">
+        <div class="portrait" style="background-image:url(m/sakura.webp)"><img src="m/photo.webp" alt="Фея русского"></div>
+        <div class="bubble">Научимся магии вместе?</div>
+      </div>
+      <div class="eyebrow">видеокурс от Феи русского</div>
+      <h1>Power Point <em>с Феей русского</em></h1>
+      <p class="lead">Уроки-игры, после которых ученики сами просят «а давайте ещё». Всё это делается в обычном PowerPoint, без программирования и дорогих сервисов. Посмотрите в ролике, что получается у меня: через пару уроков вы соберёте такую же игру сами.</p>
+      <ul class="promises">
+        <li>Кнопки, триггеры, движение, звуки и эффектные анимации</li>
+        <li>Мои шаблоны элементов и шпаргалки, чтобы не начинать с нуля</li>
+        <li>Смотрите в своём темпе: плеер запомнит, где вы остановились</li>
+      </ul>
+      <div class="cta"><a class="pill main" href="#lesson-1" style="text-decoration:none">Начать с урока 1 →</a></div>
+    </div>
+    <div class="reel">
+      <span class="cap">Мои игры</span>
+      <video id="reel" src="m/reel.mp4" poster="m/reel.jpg" autoplay muted loop playsinline></video>
+      <button class="snd" id="reelSnd">Включить звук</button>
+    </div>
+  </header>
+  <h2 class="menu-h">Что внутри курса</h2>
+  <p class="menu-sub">Выберите раздел, и он откроется.</p>
+  <div class="menu">
+    <a class="mcard" href="#lessons"><div class="img" style="background-image:url(c/c1.jpg)"></div><div class="body"><div class="k">Раздел 1</div><div class="t">Видеоуроки</div><div class="d" id="mLessons">5 уроков</div><div class="go">Смотреть →</div></div></a>
+    <a class="mcard" href="#sheets"><div class="img" style="background-image:url(m/sh2.jpg);background-position:top"></div><div class="body"><div class="k">Раздел 2</div><div class="t">Шпаргалки</div><div class="d">2 шпаргалки: где брать картинки и идеи для игр</div><div class="go">Открыть →</div></div></a>
+    <a class="mcard" href="#templates"><div class="img" style="background-image:url(t/tpl-4.jpg)"></div><div class="body"><div class="k">Раздел 3</div><div class="t">Шаблоны</div><div class="d">3 презентации: элементы, анимации и макрос</div><div class="go">Скачать →</div></div></a>
+  </div>
+ </div>
+
+ <div class="view" id="v-lessons" hidden>
+  <div class="vhead"><h2>Видеоуроки</h2></div>
+  <div class="grid" id="course">
+    <section class="stage">
+      <div class="player" id="player">
+        <video id="vA" playsinline preload="metadata"></video>
+        <video id="vB" class="off" playsinline preload="auto" muted></video>
+        <div class="spin" id="spin" hidden></div>
+        <button class="poster" id="poster" aria-label="Смотреть урок"><span class="big"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></svg></span></button>
+        <div class="bar">
+          <input type="range" id="seek" min="0" max="1000" value="0" step="1" aria-label="Перемотка">
+          <div class="row">
+            <button class="btn" id="play" aria-label="Пуск"><svg viewBox="0 0 24 24" id="playIco"><path d="M7 4.5v15l12-7.5z"/></svg></button>
+            <button class="btn" id="back" aria-label="Назад на 10 секунд"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg></button>
+            <button class="btn" id="fwd" aria-label="Вперёд на 10 секунд"><svg viewBox="0 0 24 24"><path d="M12 5V1l5 5-5 5V7a6 6 0 1 0 6 6h2a8 8 0 1 1-8-8z"/></svg></button>
+            <span class="time" id="time">0:00 / 0:00</span>
+            <span class="sp"></span>
+            <button class="btn" id="mute" aria-label="Звук"><svg viewBox="0 0 24 24"><path id="muteP" d="M4 9v6h4l5 5V4L8 9zm12.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
+            <input type="range" id="vol" min="0" max="100" value="100" aria-label="Громкость">
+            <button class="btn speed" id="speed" aria-label="Скорость">1×</button>
+            <button class="btn" id="fs" aria-label="Во весь экран"><svg viewBox="0 0 24 24"><path d="M5 5h5V3H3v7h2zm9-2v2h5v5h2V3zm5 16h-5v2h7v-7h-2zM5 14H3v7h7v-2H5z"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="now">
+        <div><span class="n" id="nowN"></span><h2 id="nowT"></h2></div>
+        <div class="navs"><button class="pill" id="prev">← Назад</button><button class="pill main" id="next">Следующий урок →</button></div>
+      </div>
+      <p class="note" id="nowD"></p>
+    </section>
+
+    <aside>
+      <h3>Уроки курса</h3>
+      <div class="prog"><span id="progT">Просмотрено 0 из 5</span><div class="track"><i id="progB"></i></div></div>
+      <ul class="list" id="list"></ul>
+    </aside>
+  </div>
+ </div>
+
+  <section class="block view" id="v-sheets" hidden>
+    <h2>Шпаргалки</h2>
+    <p class="sub">Где брать фоны, героев и кнопки для игр, и готовые идеи сюжетов. Нажмите на шпаргалку, чтобы открыть её целиком.</p>
+    <div class="sheets">
+      <button class="sheet" data-sheet="m/sh1.jpg"><div class="img" style="background-image:url(m/sh1.jpg)"></div><div class="t">Основа для игр</div><div class="d">Источники фонов, героев и кнопок: freepik, pinterest, Google, Creazilla</div></button>
+      <button class="sheet" data-sheet="m/sh2.jpg"><div class="img" style="background-image:url(m/sh2.jpg)"></div><div class="t">Идеи для вас</div><div class="d">10 сюжетов для уроков-игр: от детектива по «Скуби-Ду» до подводного мира</div></button>
+    </div>
+  </section>
+
+  <section class="block view" id="v-templates" hidden>
+    <h2>Шаблоны для ваших игр</h2>
+    <p class="sub">Мои презентации с элементами, анимациями и макросом для ваших игр. Пролистайте слайды здесь, а анимации оживут, когда откроете файл в PowerPoint.</p>
+    <div class="tpls" id="tpls"></div>
+  </section>
+
+  <footer><span class="sig">Фея русского</span>@russiangel</footer>
+</div>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Просмотр">
+  <img id="lbImg" alt="">
+  <div class="ctl"><button class="pill" id="lbPrev">←</button><span id="lbN"></span><button class="pill" id="lbNext">→</button><button class="pill" id="lbClose">Закрыть</button></div>
+</div>
+
+<script>
+const CH = [[["v/l1_00.mp4", 242.016], ["v/l1_01.mp4", 127.4]], [["v/l2_00.mp4", 241.696], ["v/l2_01.mp4", 37.6]], [["v/l3_00.mp4", 241.664], ["v/l3_01.mp4", 75.36]], [["v/l4_00.mp4", 241.248], ["v/l4_01.mp4", 241.48], ["v/l4_02.mp4", 101.72]], [["v/l5a_00.mp4", 252.928], ["v/l5a_01.mp4", 244.168], ["v/l5a_02.mp4", 244.019], ["v/l5a_03.mp4", 224.018], ["v/l5a_04.mp4", 253.202], ["v/l5a_05.mp4", 249.175], ["v/l5a_06.mp4", 214.203], ["v/l5a_07.mp4", 246.125], ["v/l5a_08.mp4", 237.6], ["v/l5b_00.mp4", 257.813], ["v/l5b_01.mp4", 242.018], ["v/l5b_02.mp4", 250.002], ["v/l5b_03.mp4", 212.013], ["v/l5b_04.mp4", 241.976], ["v/l5b_05.mp4", 265.019], ["v/l5b_06.mp4", 212.967], ["v/l5b_07.mp4", 246.045], ["v/l5b_08.mp4", 250.97], ["v/l5b_09.mp4", 172.2]]];
+const LESSONS = [
+  {t:"Кнопки", d:"Делаем кнопки из фигур: заливка, контур, тени и оформление, чтобы на них хотелось нажать."},
+  {t:"Триггеры", d:"Настраиваем триггеры: элемент появляется или двигается только по клику на нужный объект."},
+  {t:"Предметы в движении", d:"Оживляем картинки и персонажей: пути перемещения и анимации движения."},
+  {t:"Музыка, звуки и другой антураж", d:"Добавляем музыку, звуковые эффекты и атмосферные детали, которые делают презентацию игрой."},
+  {t:"Интересные анимации", d:"Большой практический урок: собираем эффектные анимации на живых примерах."}
+].map((l,i)=>({...l, cover:`c/c${i+1}.jpg`, chunks:CH[i], dur:CH[i].reduce((a,c)=>a+c[1],0)}));
+
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const fmt=s=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=String(s%60).padStart(2,'0');return h?`${h}:${String(m).padStart(2,'0')}:${x}`:`${m}:${x}`};
+const human=s=>{const m=Math.round(s/60);return m>=60?`${Math.floor(m/60)} ч ${m%60} мин`:`${m} мин`};
+
+$('mLessons').textContent=`5 уроков, ${human(LESSONS.reduce((a,l)=>a+l.dur,0))} видео`;
+
+let cur=0, ci=0, active=$('vA'), spare=$('vB'), spareIdx=-1, rate=1, wantPlay=false, seeking=false;
+let watched=store.get('ppf_watched',{}), pos=store.get('ppf_pos',{});
+
+function offsetOf(i){let o=0;for(let k=0;k<i;k++)o+=LESSONS[cur].chunks[k][1];return o}
+function gtime(){return offsetOf(ci)+(active.currentTime||0)}
+
+function renderList(){
+  $('list').innerHTML=LESSONS.map((l,i)=>`<li><button class="item${i===cur?' on':''}" data-i="${i}">
+    <img src="${l.cover}" alt="" loading="lazy"><div><div class="k">Урок ${i+1}</div><div class="t">${l.t}</div>
+    <div class="d">${human(l.dur)}${watched[i]?' · <span class="done">просмотрен ✓</span>':''}</div></div></button></li>`).join('');
+  const n=Object.keys(watched).length;
+  $('progT').textContent=`Просмотрено ${n} из ${LESSONS.length}`;
+  $('progB').style.width=(n/LESSONS.length*100)+'%';
+}
+$('list').addEventListener('click',e=>{const b=e.target.closest('.item');if(b)openLesson(+b.dataset.i,true)});
+
+function setSrc(v,i){v.src=LESSONS[cur].chunks[i][0]}
+function prepSpare(i){
+  if(i>=LESSONS[cur].chunks.length){spareIdx=-1;return}
+  if(spareIdx===i)return;
+  spareIdx=i; setSrc(spare,i); spare.load();
+}
+function loadChunk(i,t,play){
+  ci=i; $('spin').hidden=false;
+  if(spareIdx===i){swap()} else {setSrc(active,i)}
+  const go=()=>{try{active.currentTime=t}catch(e){} active.playbackRate=rate; if(play)active.play().catch(()=>{}); $('spin').hidden=true; prepSpare(i+1)};
+  if(active.readyState>=1)go(); else active.addEventListener('loadedmetadata',go,{once:true});
+}
+function swap(){
+  const o=active; active=spare; spare=o;
+  active.muted=$('vol').dataset.m==='1'; active.volume=+$('vol').value/100;
+  active.classList.remove('off'); spare.classList.add('off'); spare.pause(); spare.muted=true; spareIdx=-1;
+}
+function bind(v){
+  v.addEventListener('timeupdate',()=>{if(v===active&&!seeking)ui()});
+  v.addEventListener('waiting',()=>{if(v===active)$('spin').hidden=false});
+  v.addEventListener('playing',()=>{if(v===active){$('spin').hidden=true;icon()}});
+  v.addEventListener('pause',()=>{if(v===active)icon()});
+  v.addEventListener('ended',()=>{
+    if(v!==active)return;
+    if(ci+1<LESSONS[cur].chunks.length){loadChunk(ci+1,0,true)}
+    else{watched[cur]=1;store.set('ppf_watched',watched);pos[cur]=0;store.set('ppf_pos',pos);renderList();icon()}
+  });
+}
+bind($('vA'));bind($('vB'));
+
+function seekTo(g,play){
+  const ch=LESSONS[cur].chunks; g=Math.max(0,Math.min(g,LESSONS[cur].dur-0.5));
+  let i=0,o=0; while(i<ch.length-1&&g>=o+ch[i][1]){o+=ch[i][1];i++}
+  if(i===ci&&active.src){active.currentTime=g-o; if(play)active.play().catch(()=>{})} else loadChunk(i,g-o,play);
+}
+let lastSave=0;
+function ui(){
+  const g=gtime(),D=LESSONS[cur].dur,p=g/D*100;
+  $('seek').value=Math.round(p*10); $('seek').style.setProperty('--p',p+'%');
+  $('time').textContent=`${fmt(g)} / ${fmt(D)}`;
+  if(Date.now()-lastSave>4000){lastSave=Date.now();pos[cur]=g;store.set('ppf_pos',pos);if(g>D-20&&!watched[cur]){watched[cur]=1;store.set('ppf_watched',watched);renderList()}}
+}
+function icon(){$('playIco').innerHTML=active.paused?'<path d="M7 4.5v15l12-7.5z"/>':'<path d="M6 4h4v16H6zm8 0h4v16h-4z"/>';$('play').setAttribute('aria-label',active.paused?'Пуск':'Пауза')}
+
+function openLesson(i,play){
+  if(i<0||i>=LESSONS.length)return;
+  active.pause(); spare.pause(); spareIdx=-1; spare.removeAttribute('src'); active.removeAttribute('src');
+  cur=i; ci=0; const L=LESSONS[i];
+  $('nowN').textContent=`Урок ${i+1} из ${LESSONS.length}`; $('nowT').textContent=L.t; $('nowD').textContent=L.d;
+  $('prev').disabled=i===0; $('next').disabled=i===LESSONS.length-1;
+  $('poster').style.backgroundImage=`url(${L.cover})`; $('poster').hidden=!!play;
+  $('seek').value=0;$('seek').style.setProperty('--p','0%');
+  const start=pos[i]||0;
+  $('time').textContent=`${fmt(start)} / ${fmt(L.dur)}`;
+  if(view==='lessons'&&location.hash!=='#lesson-'+(i+1))history.replaceState(null,'','#lesson-'+(i+1));
+  renderList(); icon();
+  if(play)seekTo(start,true); else {pendingStart=start}
+}
+let pendingStart=0;
+function start(){ $('poster').hidden=true; if(!active.src)seekTo(pendingStart||pos[cur]||0,true); else active.play().catch(()=>{}) }
+$('poster').onclick=start;
+$('play').onclick=()=>{ if(!active.src||!$('poster').hidden)return start(); active.paused?active.play().catch(()=>{}):active.pause() };
+$('back').onclick=()=>seekTo(gtime()-10,!active.paused);
+$('fwd').onclick=()=>seekTo(gtime()+10,!active.paused);
+$('seek').addEventListener('input',e=>{seeking=true;const g=e.target.value/1000*LESSONS[cur].dur;e.target.style.setProperty('--p',e.target.value/10+'%');$('time').textContent=`${fmt(g)} / ${fmt(LESSONS[cur].dur)}`});
+$('seek').addEventListener('change',e=>{seeking=false;$('poster').hidden=true;seekTo(e.target.value/1000*LESSONS[cur].dur,true)});
+$('vol').addEventListener('input',e=>{active.volume=e.target.value/100;active.muted=false;e.target.dataset.m='0';muteIco()});
+$('mute').onclick=()=>{active.muted=!active.muted;$('vol').dataset.m=active.muted?'1':'0';muteIco()};
+function muteIco(){$('muteP').setAttribute('d',active.muted?'M4 9v6h4l5 5V4L8 9zm12.6 3 2.2-2.2-1.4-1.4-2.2 2.2-2.2-2.2-1.4 1.4 2.2 2.2-2.2 2.2 1.4 1.4 2.2-2.2 2.2 2.2 1.4-1.4z':'M4 9v6h4l5 5V4L8 9zm12.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z')}
+const RATES=[1,1.25,1.5,1.75,2,0.75];
+$('speed').onclick=()=>{rate=RATES[(RATES.indexOf(rate)+1)%RATES.length];active.playbackRate=rate;$('speed').textContent=rate+'×'};
+$('fs').onclick=()=>{const p=$('player');try{if(document.fullscreenElement)document.exitFullscreen();else if(p.requestFullscreen)p.requestFullscreen().catch(()=>active.webkitEnterFullscreen&&active.webkitEnterFullscreen());else if(active.webkitEnterFullscreen)active.webkitEnterFullscreen()}catch(e){}};
+$('prev').onclick=()=>openLesson(cur-1,false);
+$('next').onclick=()=>openLesson(cur+1,false);
+$('player').addEventListener('dblclick',e=>{if(e.target.tagName==='VIDEO')$('fs').click()});
+$('player').addEventListener('click',e=>{if(e.target.tagName==='VIDEO')$('play').click()});
+let idleT; $('player').addEventListener('pointermove',()=>{$('player').classList.remove('idle');clearTimeout(idleT);idleT=setTimeout(()=>{if(!active.paused)$('player').classList.add('idle')},2600)});
+document.addEventListener('keydown',e=>{if(view!=='lessons')return;if(e.target.tagName==='INPUT'&&e.target.type!=='range')return;
+  if(e.code==='Space'&&e.target.tagName!=='BUTTON'){e.preventDefault();$('play').click()}
+  if(e.key==='ArrowRight'&&e.target.id!=='seek'&&e.target.id!=='vol')$('fwd').click();
+  if(e.key==='ArrowLeft'&&e.target.id!=='seek'&&e.target.id!=='vol')$('back').click();});
+const VIEWS=['home','lessons','sheets','templates'];
+function show(v){
+  if(v===view)return; view=v;
+  VIEWS.forEach(n=>{$('v-'+n).hidden=n!==v});
+  document.querySelectorAll('.tab').forEach(t=>{if(t.dataset.v===v)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current')});
+  if(v!=='lessons'){active.pause();spare.pause()}
+  const r=$('reel'); if(v==='home')r.play().catch(()=>{}); else r.pause();
+  window.scrollTo(0,0);
+}
+let view='';
+function route(){
+  const h=location.hash.slice(1), m=h.match(/^lesson-(\d)$/);
+  if(m){const i=Math.min(LESSONS.length,Math.max(1,+m[1]))-1;show('lessons');if(i!==cur||!$('nowT').textContent)openLesson(i,false);return}
+  if(h==='lessons'){show('lessons');history.replaceState(null,'','#lesson-'+(cur+1));return}
+  show(VIEWS.includes(h)?h:'home');
+}
+openLesson(0,false);
+window.addEventListener('hashchange',route);
+route();
+
+/* заставка */
+$('reelSnd').onclick=()=>{const r=$('reel');r.muted=!r.muted;if(!r.muted){r.currentTime=0;r.play().catch(()=>{})}$('reelSnd').textContent=r.muted?'Включить звук':'Выключить звук'};
+$('reelSnd').textContent='Включить звук';
+
+/* шаблоны */
+const pad=n=>String(n).padStart(2,'0');
+const TPLS=[
+  {tag:'Шаблон', t:'Шаблоны элементов из моих игр', d:'Кнопки старта, «домой» и «далее», уровни, сундуки, монеты, блёстки и набор игровых элементов для вырезки.', url:'https://docs.yandex.ru/docs/view?url=ya-disk-public%3A%2F%2FOKPT3LhiVkwc7TfqaJRZ9SeS8Uu9G8lTXdWTjD5n4afFwrzopH7R9p%2FFmQpnAR2Fq%2FJ6bpmRyOJonT3VoXnDag%3D%3D%3A%2Fшаблоны%20элементов%20из%20игр.pptx&name=шаблоны%20элементов%20из%20игр.pptx', slides:Array.from({length:8},(_,i)=>`t/tpl-${i+1}.jpg`)},
+  {tag:'Шпаргалка', t:'Шпаргалка по анимациям', d:'Где брать контент и гифки, плавное появление, эффекты выхода, путь героя, звуки, викторина, вылетающие предметы.', url:'https://docs.yandex.ru/docs/view?url=ya-disk-public%3A%2F%2FOKPT3LhiVkwc7TfqaJRZ9SeS8Uu9G8lTXdWTjD5n4afFwrzopH7R9p%2FFmQpnAR2Fq%2FJ6bpmRyOJonT3VoXnDag%3D%3D%3A%2Fшпаргалка.pptx&name=шпаргалка.pptx', slides:Array.from({length:25},(_,i)=>`t/cheat-${pad(i+1)}.jpg`)},
+  {tag:'Макрос · Windows', t:'Шаблон с макросом «Взять и двигать»', d:'Предмет можно перетаскивать прямо во время показа. Работает только в PowerPoint на Windows: при открытии нажмите «Включить содержимое». ', url:'https://docs.yandex.ru/docs/view?url=ya-disk-public%3A%2F%2FOKPT3LhiVkwc7TfqaJRZ9SeS8Uu9G8lTXdWTjD5n4afFwrzopH7R9p%2FFmQpnAR2Fq%2FJ6bpmRyOJonT3VoXnDag%3D%3D%3A%2Fшаблон%20макроса.pptm&name=шаблон%20макроса.pptm', slides:['t/macro-1.jpg','t/macro-2.jpg']}
+];
+$('tpls').innerHTML=TPLS.map((x,i)=>`<article class="tpl">
+  <button class="img" data-g="${i}" style="background-image:url(${x.slides[x.tag==='Макрос · Windows'?0:0]})" aria-label="Смотреть слайды"><span>${x.slides.length} ${x.slides.length===2?'слайда':'слайдов'}</span></button>
+  <div class="body"><div class="tag">${x.tag}</div><div class="t">${x.t}</div><div class="d">${x.d}</div>
+  <div class="acts">${x.url?`<a class="pill main" style="text-decoration:none" href="${x.url}" target="_blank" rel="noopener">Скачать файл</a>`:''}<button class="pill${x.url?'':' main'}" data-g="${i}">Смотреть слайды</button></div></div></article>`).join('');
+
+$('tpls').addEventListener('click',e=>{const g=e.target.closest('[data-g]');if(g)openLb(TPLS[+g.dataset.g].slides,0,false)});
+
+/* просмотр */
+let lbList=[],lbI=0;
+function openLb(list,i,tall){lbList=list;lbI=i;$('lb').classList.toggle('tall',!!tall);$('lb').hidden=false;showLb();$('lbClose').focus()}
+function showLb(){$('lbImg').src=lbList[lbI];const many=lbList.length>1;$('lbPrev').hidden=$('lbNext').hidden=$('lbN').hidden=!many;$('lbN').textContent=`${lbI+1} / ${lbList.length}`;$('lb').scrollTop=0}
+$('lbPrev').onclick=()=>{lbI=(lbI-1+lbList.length)%lbList.length;showLb()};
+$('lbNext').onclick=()=>{lbI=(lbI+1)%lbList.length;showLb()};
+$('lbClose').onclick=()=>{$('lb').hidden=true};
+$('lb').addEventListener('click',e=>{if(e.target===$('lb'))$('lb').hidden=true});
+document.addEventListener('keydown',e=>{if($('lb').hidden)return;if(e.key==='Escape')$('lb').hidden=true;if(e.key==='ArrowRight')$('lbNext').click();if(e.key==='ArrowLeft')$('lbPrev').click();e.stopImmediatePropagation()},true);
+document.querySelectorAll('[data-sheet]').forEach(b=>b.onclick=()=>openLb([b.dataset.sheet],0,true));
+</script>
+
+</body>
+</html>
